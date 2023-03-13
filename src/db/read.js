@@ -8,8 +8,18 @@ const read = async () => {
     return JSON.parse(data)
   } catch (err) {
     return {
-      lastId: 0,
-      todos: {},
+      users: {
+        lastId: 0,
+        rows: {},
+      },
+      posts: {
+        lastId: 0,
+        rows: {},
+      },
+      comments: {
+        lastId: 0,
+        rows: {},
+      },
     }
   }
 }

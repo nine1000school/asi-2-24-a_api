@@ -1,8 +1,12 @@
-import { deepmerge } from "deepmerge-ts"
+import { deepmergeCustom } from "deepmerge-ts"
 import { writeFile } from "node:fs/promises"
 import config from "../config.js"
+import read from "./read.js"
 
-const write = async (db, data) => {
+const deepmerge = deepmergeCustom({ mergeArrays: false })
+
+const write = async (data) => {
+  const db = await read()
   await writeFile(config.db.path, JSON.stringify(deepmerge(db, data)), {
     encoding: "utf-8",
   })

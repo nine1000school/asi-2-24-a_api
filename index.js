@@ -1,26 +1,65 @@
 import express from "express"
+import read from "./src/db/read.js"
+import write from "./src/db/write.js"
 
 const app = express()
 
-app.get("/hello", (req, res) => {
-  res.send({ message: "Hello" })
+app.use(express.json())
+
+// CREATE
+app.post("/todos", async (req, res) => {
+  const { description } = req.body
+
+  if (!description) {
+    res.status(400).send({ error: "Missing description." })
+
+    return
+  }
+
+  const db = await read()
+  const lastId = db.lastId + 1
+  const todo = {
+    id: lastId,
+    description,
+    done: false,
+  }
+
+  await write(db, {
+    lastId,
+    todos: {
+      [lastId]: todo,
+    },
+  })
+
+  res.status(201).send({ reslut: todo })
 })
 
-app.get("/goodbye", (req, res) => {
-  res.send("Goodbye~!")
+// READ collection
+app.get("/todos", async (req, res) => {
+  const { todos } = await read()
+
+  res.send({ result: Object.values(todos) })
 })
 
-app.post("/", (req, res) => {
-  res.send("You did a POST request.")
+// READ single
+app.get("/todos/:todoId", async (req, res) => {
+  const todoId = Number.parseInt(req.params.todoId, 10)
+  const db = await read()
+  const todo = db.todos[todoId]
+
+  if (!todo) {
+    res.status(404).send({ error: "Not found" })
+
+    return
+  }
+
+  res.send({ result: todo })
 })
 
-app.delete("/", (req, res) => {
-  res.send("You did a DELETE request.")
-})
+// UPDATE
+app.patch("/todos/:todoId", async (req, res) => {})
 
-// 404
-app.use("/", (req, res) => {
-  res.status(404).send("You did a request with an unhandled method.")
-})
+// DELETE
+app.delete("/todos/:todoId", async (req, res) => {})
 
 app.listen(4000, () => console.log("Listening on :4000"))

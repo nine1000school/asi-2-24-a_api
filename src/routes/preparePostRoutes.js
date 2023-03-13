@@ -18,8 +18,6 @@ const preparePostRoutes = (app) => {
       publishedAt: publishedAt || new Date().toISOString(),
     }
 
-    console.log(post)
-
     await write({
       posts: {
         lastId: id,

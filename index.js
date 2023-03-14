@@ -4,6 +4,11 @@ import preparePostRoutes from "./src/routes/preparePostRoutes.js"
 const app = express()
 
 app.use(express.json())
+app.use((req, res, next) => {
+  req.ctx = {}
+
+  next()
+})
 
 preparePostRoutes(app)
 

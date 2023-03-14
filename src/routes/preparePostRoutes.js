@@ -1,5 +1,6 @@
 import read from "../db/read.js"
 import write from "../db/write.js"
+import fetchPost from "../middlewares/fetchPost.js"
 
 const preparePostRoutes = (app) => {
   // CREATE
@@ -41,38 +42,15 @@ const preparePostRoutes = (app) => {
   })
 
   // READ single
-  app.get("/posts/:postId", async (req, res) => {
-    const postId = Number.parseInt(req.params.postId, 10)
-    const {
-      posts: {
-        rows: { [postId]: post },
-      },
-    } = await read()
-
-    if (!post) {
-      res.status(404).send({ error: "Not found" })
-
-      return
-    }
-
-    res.send({ result: post })
+  app.get("/posts/:postId", fetchPost, async (req, res) => {
+    res.send({ result: req.ctx.post })
   })
 
   // UPDATE
-  app.patch("/posts/:postId", async (req, res) => {
+  app.patch("/posts/:postId", fetchPost, async (req, res) => {
     const postId = Number.parseInt(req.params.postId, 10)
     const { title, content, tags, publishedAt } = req.body
-    const {
-      posts: {
-        rows: { [postId]: post },
-      },
-    } = await read()
-
-    if (!post) {
-      res.status(404).send({ error: "Not found" })
-
-      return
-    }
+    const { post } = req.ctx
 
     const updatedPost = {
       ...post,
@@ -94,19 +72,9 @@ const preparePostRoutes = (app) => {
   })
 
   // DELETE
-  app.delete("/posts/:postId", async (req, res) => {
+  app.delete("/posts/:postId", fetchPost, async (req, res) => {
     const postId = Number.parseInt(req.params.postId, 10)
-    const {
-      posts: {
-        rows: { [postId]: post },
-      },
-    } = await read()
-
-    if (!post) {
-      res.status(404).send({ error: "Not found" })
-
-      return
-    }
+    const { post } = req.ctx
 
     await write({
       posts: {

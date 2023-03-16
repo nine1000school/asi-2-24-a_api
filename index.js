@@ -1,15 +1,31 @@
+import cors from "cors"
 import express from "express"
+import prepareCommentRoutes from "./src/routes/prepareCommentRoutes.js"
 import preparePostRoutes from "./src/routes/preparePostRoutes.js"
 
 const app = express()
 
+app.use(cors())
 app.use(express.json())
 app.use((req, res, next) => {
-  req.ctx = {}
+  req.ctx = {
+    util: {
+      handleNotFound: (x) => {
+        if (!x) {
+          res.status(404).send({ error: "Not found" })
+
+          return true
+        }
+
+        return false
+      },
+    },
+  }
 
   next()
 })
 
 preparePostRoutes(app)
+prepareCommentRoutes(app)
 
 app.listen(4000, () => console.log("Listening on :4000"))

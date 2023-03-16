@@ -1,16 +1,10 @@
-import read from "../db/read.js"
+import { findPostById } from "../db/posts.js"
 
 const fetchPost = async (req, res, next) => {
   const postId = Number.parseInt(req.params.postId, 10)
-  const {
-    posts: {
-      rows: { [postId]: post },
-    },
-  } = await read()
+  const post = await findPostById(postId)
 
-  if (!post) {
-    res.status(404).send({ error: "Not found" })
-
+  if (req.ctx.util.handleNotFound(post)) {
     return
   }
 

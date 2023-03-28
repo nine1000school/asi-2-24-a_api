@@ -1,8 +1,7 @@
-import { findPostById } from "../db/posts.js"
+import PostModel from "../db/models/PostModel.js"
 
 const fetchPost = async (req, res, next) => {
-  const postId = Number.parseInt(req.params.postId, 10)
-  const post = await findPostById(postId)
+  const post = await PostModel.findById(req.params.postId)
 
   if (req.ctx.util.handleNotFound(post)) {
     return

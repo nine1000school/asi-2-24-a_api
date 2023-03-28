@@ -4,6 +4,7 @@ import mongoose from "mongoose"
 import config from "./src/config.js"
 import prepareCommentRoutes from "./src/routes/prepareCommentRoutes.js"
 import preparePostRoutes from "./src/routes/preparePostRoutes.js"
+import prepareSignRoutes from "./src/routes/prepareSignRoutes.js"
 
 await mongoose.connect(config.db.uri)
 
@@ -29,6 +30,7 @@ app.use((req, res, next) => {
   next()
 })
 
+prepareSignRoutes(app)
 preparePostRoutes(app)
 prepareCommentRoutes(app)
 

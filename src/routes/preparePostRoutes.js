@@ -1,41 +1,23 @@
-import read from "../db/read.js"
-import write from "../db/write.js"
+import PostModel from "../db/models/PostModel.js"
 import fetchPost from "../middlewares/fetchPost.js"
 
 const preparePostRoutes = (app) => {
   // CREATE
   app.post("/posts", async (req, res) => {
     const { title, content, tags, publishedAt } = req.body
-    const {
-      posts: { lastId },
-    } = await read()
-    const id = lastId + 1
-    const post = {
-      id,
+    const post = await new PostModel({
       title,
       content,
       tags,
       publishedAt: publishedAt || new Date().toISOString(),
-    }
-
-    await write({
-      posts: {
-        lastId: id,
-        rows: {
-          [id]: post,
-        },
-      },
-    })
+    }).save()
 
     res.send({ result: post })
   })
 
   // READ collection
   app.get("/posts", async (req, res) => {
-    const {
-      posts: { rows },
-    } = await read()
-    const posts = Object.values(rows)
+    const posts = await PostModel.find()
 
     res.send({ result: posts })
   })

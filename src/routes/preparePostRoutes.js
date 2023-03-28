@@ -9,7 +9,6 @@ const preparePostRoutes = (app) => {
     const {
       posts: { lastId },
     } = await read()
-
     const id = lastId + 1
     const post = {
       id,

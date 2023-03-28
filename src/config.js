@@ -1,8 +1,9 @@
 import "dotenv/config"
 
 const config = {
+  port: process.env.PORT,
   db: {
-    path: process.env.DB_PATH,
+    uri: process.env.DB_URI,
   },
 }
 

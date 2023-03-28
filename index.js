@@ -1,7 +1,11 @@
 import cors from "cors"
 import express from "express"
+import mongoose from "mongoose"
+import config from "./src/config.js"
 import prepareCommentRoutes from "./src/routes/prepareCommentRoutes.js"
 import preparePostRoutes from "./src/routes/preparePostRoutes.js"
+
+await mongoose.connect(config.db.uri)
 
 const app = express()
 
@@ -28,4 +32,4 @@ app.use((req, res, next) => {
 preparePostRoutes(app)
 prepareCommentRoutes(app)
 
-app.listen(4000, () => console.log("Listening on :4000"))
+app.listen(config.port, () => console.log(`Listening on :${config.port}`))

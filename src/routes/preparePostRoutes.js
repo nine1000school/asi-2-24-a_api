@@ -1,15 +1,20 @@
 import PostModel from "../db/models/PostModel.js"
+import auth from "../middlewares/auth.js"
 import fetchPost from "../middlewares/fetchPost.js"
 
 const preparePostRoutes = (app) => {
   // CREATE
-  app.post("/posts", async (req, res) => {
+  app.post("/posts", auth, async (req, res) => {
     const { title, content, tags, publishedAt } = req.body
+    const {
+      ctx: { session },
+    } = req
     const post = await new PostModel({
       title,
       content,
       tags,
       publishedAt: publishedAt || new Date().toISOString(),
+      author: session.user,
     }).save()
 
     res.send({ result: post })

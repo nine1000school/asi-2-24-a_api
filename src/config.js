@@ -6,6 +6,10 @@ const config = {
     uri: process.env.DB_URI,
   },
   security: {
+    jwt: {
+      expiresIn: "2 days",
+      secret: process.env.SECURITY_JWT_SECRET,
+    },
     password: {
       saltLen: 128,
       keylen: 256,

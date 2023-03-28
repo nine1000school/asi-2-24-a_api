@@ -1,3 +1,5 @@
+import jsonwebtoken from "jsonwebtoken"
+import config from "../config.js"
 import UserModel from "../db/models/UserModel.js"
 import hashPassword from "../hashPassword.js"
 
@@ -42,7 +44,23 @@ const prepareSignRoutes = (app) => {
       return
     }
 
-    res.send({ result: true })
+    const jwt = jsonwebtoken.sign(
+      {
+        payload: {
+          user: {
+            id: String(user._id),
+            firstName: user.firstName,
+            lastName: user.lastName,
+          },
+        },
+      },
+      config.security.jwt.secret,
+      {
+        expiresIn: config.security.jwt.expiresIn,
+      }
+    )
+
+    res.send({ result: jwt })
   })
 }
 

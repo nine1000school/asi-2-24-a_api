@@ -33,42 +33,27 @@ const preparePostRoutes = (app) => {
   })
 
   // UPDATE
-  app.patch("/posts/:postId", fetchPost, async (req, res) => {
-    const postId = Number.parseInt(req.params.postId, 10)
+  app.patch("/posts/:postId", auth, fetchPost, async (req, res) => {
     const { title, content, tags, publishedAt } = req.body
     const { post } = req.ctx
 
-    const updatedPost = {
-      ...post,
+    Object.assign(post, {
       title: title ?? post.title,
       content: content ?? post.content,
       tags: tags ?? post.tags,
       publishedAt: publishedAt ?? post.publishedAt,
-    }
-
-    await write({
-      posts: {
-        rows: {
-          [postId]: updatedPost,
-        },
-      },
     })
 
-    res.send({ result: updatedPost })
+    await post.save()
+
+    res.send({ result: post })
   })
 
   // DELETE
-  app.delete("/posts/:postId", fetchPost, async (req, res) => {
-    const postId = Number.parseInt(req.params.postId, 10)
+  app.delete("/posts/:postId", auth, fetchPost, async (req, res) => {
     const { post } = req.ctx
 
-    await write({
-      posts: {
-        rows: {
-          [postId]: undefined,
-        },
-      },
-    })
+    await PostModel.findByIdAndDelete(post._id)
 
     res.send({ result: post })
   })
